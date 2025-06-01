@@ -5,8 +5,9 @@ var logger = require('morgan');
 var mongoose = require('mongoose')
 require('dotenv').config()
 
-//mongoose connect
-mongoose.connect('mongodb://localhost/community-Forum', (err) => console.log(err ? err : 'conneted true'))
+
+mongoose.connect(`mongodb+srv://${process.env.USER_NAME}:${process.env.USER_PASSWORD}@cluster0.dflboke.mongodb.net/`)
+.catch(err=>console.log(err))
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -22,5 +23,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/api/', indexRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/questions', require('./routes/questions'))
+
+app.use((req,res,next)=>{
+    res.status(404).send("page not found")
+    next()
+})
+
+app.use((err,req,res,next)=>{
+    res.status(404).json({"Error:":err.message})
+})
 
 module.exports = app;
